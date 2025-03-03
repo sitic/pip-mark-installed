@@ -63,18 +63,13 @@ This tool helps address situations where pip's dependency resolution doesn't beh
 
 3. **System-level installations**: When a package exists at system level but you want to prevent pip from installing conflicting versions in your environment.
 
-    Example for resolving OpenCV variants conflict:
-    ```bash
-    # Install the variant you want
-    pip install opencv-python-headless
-
-    # Mark the conflicting package as installed
-    pip-mark-installed opencv-python
-    ```
-
 ## How It Works
 
 The script creates the necessary `.dist-info` directory structure and metadata files that pip uses to determine if a package is installed.
+
+## Links
+- [GitHub Repository](https://github.com/sitic/pip-mark-installed)
+- [PyPI Package](https://pypi.org/project/pip-mark-installed/)
 
 ## License
 
