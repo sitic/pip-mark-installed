@@ -5,14 +5,15 @@ Useful e.g. for resolving conflicts between different OpenCV variants that share
 
 Usage:
     pip-mark-installed.py PACKAGE_SPEC [PACKAGE_SPEC ...]
-    
+
 Where PACKAGE_SPEC can be either:
-    - PACKAGE_NAME (uses default version)
+    - PACKAGE_NAME (uses default version 9999.99.99)
+    or
     - PACKAGE_NAME==VERSION
 
 Examples:
-    pip-mark-installed opencv-python
-    pip-mark-installed opencv-python==4.5.1 opencv-contrib-python==4.5.1
+    pip-mark-installed some-package
+    pip-mark-installed some-package==1.0.0 another-package==2.0.0
 """
 
 import site
@@ -33,8 +34,10 @@ def create_dist_info(package_name, version, site_packages):
 
     existing_installs = list(site_packages.glob(f"{normalized_name}-*"))
     if existing_installs:
-        raise FileExistsError(f"Package {package_name} is already installed. Please uninstall first.")
-    
+        raise FileExistsError(
+            f"Package {package_name} is already installed. Please uninstall first."
+        )
+
     dist_info_name = f"{normalized_name}-{version}.dist-info"
     dist_info_path = site_packages / dist_info_name
     dist_info_path.mkdir(parents=True)
@@ -65,32 +68,40 @@ def parse_package_spec(package_spec):
         package_name, version = package_spec.split("==", 1)
         return package_name, version
     else:
-        return package_spec, "2099.12.31"  # Default version
+        return package_spec, "9999.99.99"  # Default version
 
 
 def main():
+    examples = """
+Examples:
+    pip-mark-installed some-package
+    pip-mark-installed some-package==1.0.0 another-package==2.0.0
+"""
+
     parser = argparse.ArgumentParser(
-        description="Mark packages as installed by creating metadata."
+        description="Mark packages as installed by creating metadata files.",
+        epilog=examples,
+        formatter_class=argparse.RawDescriptionHelpFormatter,
     )
     parser.add_argument(
-        "package_specs", 
-        nargs="+", 
-        help="Package specifications in the format PACKAGE_NAME or PACKAGE_NAME==VERSION"
+        "package_specs",
+        nargs="*",
+        help="Package specifications in the format PACKAGE_NAME or PACKAGE_NAME==VERSION",
     )
     parser.add_argument(
         "--site-packages", help="Path to the site-packages directory (optional)."
     )
     args = parser.parse_args()
 
+    if not args.package_specs:
+        parser.print_help()
+        return
+
     if args.site_packages:
         site_packages_path = Path(args.site_packages)
     else:
         site_packages_path = Path(get_site_packages_path())
     print(f"Using Python environment at: {site_packages_path}")
-
-    if not Path(site_packages_path).exists():
-        print(f"Error: Site-packages directory not found: {site_packages_path}")
-        return
 
     for package_spec in args.package_specs:
         package_name, version = parse_package_spec(package_spec)

@@ -4,8 +4,8 @@ build-backend = "hatchling.build"
 
 [project]
 name = "pip-mark-installed"
-version = "0.0.1"
-description = "Tool to mark packages as installed in pip without actually installing them."
+version = "1.0.0"
+description = "Tool to mark packages as installed for pip without actually installing them."
 authors = [
     {name = "Jan Lebert", email = "mail@janlebert.com"}
 ]
